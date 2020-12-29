@@ -5,16 +5,34 @@ import NavBar from './navbar';
 class Counters extends Component {
   state = {
     count: 0,
-    counters: [
-      { id: 1, value: 0 },
-      { id: 2, value: 0 },
-      { id: 3, value: 0 },
-      { id: 4, value: 0 }
-    ]
+    isLoaded: false,
+    counters: []
   };
 
+  componentDidMount() {
+    fetch("https://api.github.com/users")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            isLoaded: true,
+            counters: result
+          });
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          });
+        }
+      )
+  }
+
   handleDelete = (counterId) => {
-    const counters = this.state.counters.filter(c => c.id != counterId);
+    const counters = this.state.counters.filter(c => c.id !== counterId);
     this.setState({ counters: counters });
   }
 
